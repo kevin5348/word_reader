@@ -18,5 +18,7 @@ for line in lines:
 #turns data into a dataFrame and logs the data.Also turns the data into a csv file
 df = pd.DataFrame(list(word_counts.items()), columns=["word", "count"])
 df["log_count"] = df["count"].apply(math.log)
-df.to_csv("word_frequencies.csv", index=False)
+df.to_csv("datasets/frequency/word_frequencies.csv", index=False)
+
+
 
