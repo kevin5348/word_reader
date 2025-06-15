@@ -1,5 +1,5 @@
 import pandas as pd
-from model.syllable import add_syllable_column
+from model.syllables import add_syllable_column
 from model.homophone import add_homophone_column
 
 # Load the CSV
