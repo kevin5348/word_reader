@@ -1,0 +1,13 @@
+# Ignore virtual environments
+env/
+venv/
+
+# Ignore NLTK data downloads
+nltk_data/
+
+# Ignore compiled Python files and cache
+__pycache__/
+*.pyc
+
+# Jupyter/VSCode autosaves
+.ipynb_checkpoints/
