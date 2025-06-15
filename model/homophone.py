@@ -10,7 +10,7 @@ pronounce = cmudict.dict()
 
 #Get path to CSV relative 
 script_dir = os.path.dirname(__file__)
-csv_path = os.path.join(script_dir, "datasets/frequency/word_frequencies.csv")
+csv_path = os.path.join(script_dir, "datasets/word_frequencies.csv")
 
 #Load word frequency data
 df = pd.read_csv(csv_path)
@@ -27,7 +27,6 @@ pronounce_groups = defaultdict(list)
 
 for word in valid_words:
     if word in pronounce and pronounce[word]:
-        # use only first pronunciation for simplicity
         pron_key = tuple(pronounce[word][0])
         pronounce_groups[pron_key].append(word)
 
@@ -43,7 +42,7 @@ def is_homophone(word):
 
 
 df["is_homophone"] = df["word"].apply(is_homophone)
-output_path = os.path.join(script_dir, "datasets/frequency/word_frequencies_with_homophones.csv")
+output_path = os.path.join(script_dir, "datasets/word_frequencies_with_homophones.csv")
 df.to_csv(output_path, index=False)
 
 
