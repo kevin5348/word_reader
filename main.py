@@ -1,10 +1,13 @@
 import pandas as pd
 import numpy as np
+import random
 from model.cleaning import clean_data
 from model.syllables import add_syllables_column
 from model.homophone import add_homophone_column
 from model.has_multiple_pronunciations import has_multiple_pronunciations
 from model.difficulty_model  import train_model,save_model,load_model,predict_difficulty
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
 import os
 import pandas as pd
 folder_path = os.path.join(os.path.dirname(__file__), "datasets", "raw_data")
@@ -32,9 +35,41 @@ df.to_csv(output_path, index=False)
 
 #load cleaned and featured data for training 
 df = pd.read_csv("/home/kevin/repos/word_reader/datasets/complete_data/original_data_frequency_complete.csv")
-df["user_difficulty_test"] = np.random.randint(0, 2, size=len(df))
-model, scaler = train_model(df)
-save_model(model,scaler)
-df = predict_difficulty(df,model, scaler)
-df.to_csv("data_withpredictions.csv",index= False)
+
+# TEMP: assign random difficulty labels (replace with real ones later)
+
+df["user_difficulty_score"] = (
+    1 - np.clip(np.log1p(df["count"]) / 10, 0, 1)**2 +
+    (df["syllables"] >= 3).astype(int) * 0.2 +
+    (df["pronunciation_count"] > 1).astype(int) * 0.2 +
+    df["is_homophone"] * 0.3
+)
+
+
+
+df["user_difficulty_score"] += np.random.normal(0, 0.05, size=len(df))
+df["user_difficulty_score"] = np.clip(df["user_difficulty_score"], 0, 1)
+
+# Normalize it to 0–1
+df["user_difficulty_score"] = df["user_difficulty_score"] / df["user_difficulty_score"].max()
+
+
+# Split into 80% train, 20% test
+train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
+
+# Train on training data
+model, scaler = train_model(train_df)
+save_model(model, scaler)
+
+# Predict on test data (unseen during training)
+test_df = predict_difficulty(test_df, model, scaler)
+
+# Evaluate the model
+mse = mean_squared_error(test_df["user_difficulty_score"], test_df["predicted_difficulty"])
+print("Mean Squared Error:", mse)
+
+df.to_csv("datasets/complete_data/data_with_predictions.csv",index= False)
+
+
+
 
