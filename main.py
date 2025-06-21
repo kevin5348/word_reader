@@ -1,16 +1,15 @@
 import pandas as pd
 import numpy as np
-import random
-from model.cleaning import clean_data
-from model.syllables import add_syllables_column
-from model.homophone import add_homophone_column
-from model.has_multiple_pronunciations import has_multiple_pronunciations
+from model.features.cleaning import clean_data
+from model.features.syllables import add_syllables_column
+from model.features.homophone import add_homophone_column
+from model.features.has_multiple_pronunciations import has_multiple_pronunciations
 from model.difficulty_model  import train_model,save_model,load_model,predict_difficulty
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import os
 import pandas as pd
-folder_path = os.path.join(os.path.dirname(__file__), "datasets", "raw_data")
+folder_path = os.path.join(os.path.dirname(__file__), "/home/kevin/repos/word_reader/datasets", "raw_data")
 def get_latest_file(folder_path):
     files = [os.path.join(folder_path, f) for f in os.listdir(folder_path)]
     files = [f for f in files if os.path.isfile(f)]
@@ -25,16 +24,19 @@ df = add_syllables_column(df)
 df = add_homophone_column(df)
 df = has_multiple_pronunciations(df)
 #extracts original name of file and adds complete.csv
-base_name = os.path.basename(file_path)            
-name, _ = os.path.splitext(base_name)               
-output_filename = f"{name}_complete.csv"          
-output_path = os.path.join("/home/kevin/repos/word_reader/datasets/complete_data", output_filename)
+def save_latest_file(folder_loaction):
+    base_name = os.path.basename(file_path)            
+    name, _ = os.path.splitext(base_name)               
+    output_filename = folder_loaction + f"{name}"         
+    return os.path.join("/home/kevin/repos/word_reader/datasets", output_filename)
 
 # Save it
-df.to_csv(output_path, index=False)
+df.to_csv(save_latest_file("complete_data.csv"), index=False)
 
+folder_path = os.path.join(os.path.dirname(__file__), "/home/kevin/repos/word_reader/datasets", "complete_data")
+file_path = get_latest_file(folder_path)
 #load cleaned and featured data for training 
-df = pd.read_csv("/home/kevin/repos/word_reader/datasets/complete_data/original_data_frequency_complete.csv")
+df = pd.read_csv(file_path)
 
 # TEMP: assign random difficulty labels (replace with real ones later)
 
@@ -68,7 +70,7 @@ test_df = predict_difficulty(test_df, model, scaler)
 mse = mean_squared_error(test_df["user_difficulty_score"], test_df["predicted_difficulty"])
 print("Mean Squared Error:", mse)
 
-df.to_csv("datasets/complete_data/data_with_predictions.csv",index= False)
+df.to_csv(save_latest_file("finished_model"),index= False)
 
 
 
