@@ -18,9 +18,22 @@ def train_model(df):
 
     return model, scaler
 
+def assign_temp_difficulty_labels(df):
+    df["user_difficulty_score"] = (
+        1 - np.clip(np.log1p(df["count"]) / 10, 0, 1)**2 +
+        (df["syllables"] >= 3).astype(int) * 0.2 +
+        (df["pronunciation count"] > 1).astype(int) * 0.2 +
+        df["is_homophone"] * 0.3
+    )
+    df["user_difficulty_score"] += np.random.normal(0, 0.05, size=len(df))
+    df["user_difficulty_score"] = np.clip(df["user_difficulty_score"], 0, 1)
+    df["user_difficulty_score"] /= df["user_difficulty_score"].max()
+    return df
+
 def save_model(model, scaler, model_path="model/difficulty_model.pkl", scaler_path="model/scaler.pkl"):
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
     os.makedirs(os.path.dirname(scaler_path), exist_ok=True)
 
     joblib.dump(model, model_path)
     joblib.dump(scaler, scaler_path)
+
