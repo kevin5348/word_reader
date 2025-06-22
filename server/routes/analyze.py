@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from ml.predictor import predict_word_difficulty
+from ml.predictor import predict_difficulty
 
 analyze_bp = Blueprint('analyze', __name__)
 
@@ -11,6 +11,6 @@ def analyze_words():
         return jsonify({"error": "Missing 'hoveredWords'"}), 400
 
     words = data["hoveredWords"]
-    result = predict_word_difficulty(words)
+    result = predict_difficulty(words)
 
     return jsonify(result)

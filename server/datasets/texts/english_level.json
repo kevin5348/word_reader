@@ -1,0 +1,27 @@
+[
+    {
+        "id": "A1_001",
+        "title": "My Cat Luna",
+        "paragraph": "I have a cat. Her name is Luna. She is small and white. She likes to sleep on my bed. Every morning, Luna sits by the door and waits for food. I give her milk and fish. After breakfast, she plays with her toy mouse. In the evening, she sits next to me while I watch TV. I love Luna very much. She is my best friend."
+    },
+    {
+        "id": "A2_001",
+        "title": "A Weekend at the Beach",
+        "paragraph": "Last Saturday, my friends and I went to the beach. The weather was sunny and warm. We arrived early, put down our towels, and went swimming. The water was cold, but we had fun. Later, we played volleyball and ate sandwiches. A big dog came and stole my cookie! We laughed a lot. Before we left, we watched the sunset. It was a perfect day."
+    },
+    {
+        "id": "B1_001",
+        "title": "Learning to Drive",
+        "paragraph": "Learning to drive was one of the most exciting and stressful experiences of my life. At first, I was nervous about being on the road. I made many mistakes, like stopping too quickly or forgetting to check my mirrors. But with each lesson, I got better. My instructor was very patient and gave helpful tips. After a few weeks, I passed my test. Now, I can drive to work and visit friends. It gives me a sense of freedom and independence."
+    },
+    {
+        "id": "B2_001",
+        "title": "Balancing Work and Health",
+        "paragraph": "In today’s busy world, many people struggle to find time for their health. Long hours at the office, commuting, and digital distractions can make it difficult to maintain a balanced lifestyle. However, making small changes can lead to big improvements. For example, walking during lunch breaks, preparing simple healthy meals, and turning off devices before bed can improve sleep and reduce stress. It’s not about being perfect — it’s about creating sustainable habits. When health becomes a priority, people often find they’re more productive and happier at work too."
+    },
+    {
+        "id": "C1_001",
+        "title": "The Paradox of Choice in Modern Society",
+        "paragraph": "In contemporary consumer culture, individuals are frequently faced with an overwhelming number of options — from the mundane task of selecting a brand of toothpaste to the more significant decision of choosing a career path. While the abundance of choice is often associated with personal freedom and autonomy, psychological research has suggested that it may, paradoxically, lead to increased anxiety, dissatisfaction, and decision paralysis. When presented with too many alternatives, people tend to experience greater regret, fearing that they may have overlooked a better option. This phenomenon, often referred to as the 'paradox of choice', raises important questions about the nature of happiness and the cost of perceived freedom in a highly individualized society."
+    }
+]

@@ -30,7 +30,7 @@ def assign_temp_difficulty_labels(df):
     df["user_difficulty_score"] /= df["user_difficulty_score"].max()
     return df
 
-def save_model(model, scaler, model_path="model/difficulty_model.pkl", scaler_path="model/scaler.pkl"):
+def save_model(model, scaler, model_path="server/datasets/difficulty_model.pkl", scaler_path="server/datasets/scaler.pkl"):
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
     os.makedirs(os.path.dirname(scaler_path), exist_ok=True)
 

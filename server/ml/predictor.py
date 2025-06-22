@@ -4,7 +4,7 @@ import joblib
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 
-def load_model(model_path="/home/kevin/repos/word_reader/models/difficulty_model.pkl", scaler_path="/home/kevin/repos/word_reader/models/scaler.pkl"):
+def load_model(model_path="difficulty_model.pkl", scaler_path="scaler.pkl"):
     model = joblib.load(model_path)
     scaler = joblib.load(scaler_path)
     return model, scaler
