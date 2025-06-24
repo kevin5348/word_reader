@@ -1,10 +1,13 @@
-import os
 import numpy as np
+import os
 import joblib
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 
 def load_model(model_path="difficulty_model.pkl", scaler_path="scaler.pkl"):
+    model_path = os.path.join(os.path.dirname(__file__), "difficulty_model.pkl")
+    scaler_path = os.path.join(os.path.dirname(__file__), "scaler.pkl")
+ 
     model = joblib.load(model_path)
     scaler = joblib.load(scaler_path)
     return model, scaler

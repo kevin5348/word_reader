@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
     hashed_password TEXT NOT NULL,
-    level FLOAT DEFAULT 0.5
+    level FLOAT DEFAULT 0.5,
+    confidence FLOAT DEFAULT 0.0
 )
 """)
 print("users table created")
