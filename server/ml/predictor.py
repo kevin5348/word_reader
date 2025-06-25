@@ -1,8 +1,8 @@
 import numpy as np
 import os
 import joblib
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import StandardScaler
+import pandas as pd
+
 
 def load_model(model_path="difficulty_model.pkl", scaler_path="scaler.pkl"):
     model_path = os.path.join(os.path.dirname(__file__), "difficulty_model.pkl")
@@ -17,3 +17,15 @@ def predict_difficulty(df, model, scaler):
     X = df[["log_count", "syllables","is_homophone","pronunciation_count"]]
     df["predicted_difficulty"] = model.predict(scaler.transform(X))
     return df
+
+def predict_difficulty_user(df,words):
+    filtered = df[df["word"].isin(words)]
+    if filtered.empty:
+        return {word: 0.5 for word in words}  
+    result = dict(zip(filtered["word"], filtered["user_difficulty_score"]))
+    
+    for word in words:
+        if word not in result:
+            result[word] = 0.5
+
+    return result

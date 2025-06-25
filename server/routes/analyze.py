@@ -1,9 +1,10 @@
 from flask import Blueprint, request, jsonify
-from ml.predictor import predict_difficulty, load_model
+from ml.predictor import predict_difficulty_user
 from database.dp import get_db_connection
 from logic.update import update_user_level, update_confidence
+import pandas as pd 
 
-model, scaler = load_model()
+
 
 analyze_bp = Blueprint('analyze', __name__)
 
@@ -22,12 +23,14 @@ def analyze_words():
     words = [item["word"] for item in interactions]
     clicked_map = {item["word"]: item.get("clicked", True) for item in interactions}
 
-    difficulty_score=predict_difficulty(words, model, scaler)
+    df = pd.read_csv("server/datasets/data_with_predictions.csv")
+    difficulty_score=predict_difficulty_user(df,words)
 
     conn = get_db_connection()
     cur = conn.cursor()
-
+   
     for word in words:
+     
         difficulty = difficulty_score.get(word, 0.5)
         clicked = clicked_map.get(word,True)
 
@@ -35,6 +38,7 @@ def analyze_words():
             INSERT INTO click_logs (user_id, word, difficulty_score, clicked)
             VALUES (%s, %s ,%s, %s)
         """,(user_id,word,difficulty,clicked))
+    print("DEBUG VALUES:", word, difficulty, type(difficulty), clicked)
 
     cur.execute("""
             SELECT word,difficulty_score, clicked
@@ -42,18 +46,18 @@ def analyze_words():
             WHERE user_id = %s
             ORDER BY timestamp DESC
             LIMIT 30
-    """, (user_id))
+    """, (user_id,))
     recent_clicks = cur.fetchall()
+   
 
     cur.execute("SELECT level, confidence FROM users WHERE id = %s", (user_id,))
     row = cur.fetchone()
 
-    if row:
-        user_level = row[0]
-        confidence = row[1]
-    
+
+    if row and isinstance(row, tuple) and len(row) == 2:
+        user_level, confidence = row
     else:
-        return jsonify({"error": "User not found"}), 404
+        return jsonify({"error": "User not found or malformed row"}), 404
 
     new_level = update_user_level(recent_clicks, user_level, confidence)
     new_confidence = update_confidence(confidence, len(recent_clicks))
@@ -63,5 +67,8 @@ def analyze_words():
     """, (new_level, new_confidence, user_id))
 
     conn.commit()
+
     cur.close()
-    conn.close()                    
+    conn.close() 
+    return jsonify({"status": "success","new_level": new_level,"new_confidence": new_confidence}), 200
+                   
