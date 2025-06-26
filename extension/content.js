@@ -1,40 +1,115 @@
+console.log("📦 content.js injected");
 
-console.log("👀 content.js loaded");
+// === CONFIG ===
+const USER_ID = "test-user";
+const DIFFICULTY_THRESHOLD = 0.4;
+const MAX_WORDS = 1000;
 
-window.addEventListener("analyze-readability", async () => {
-    console.log("📘 Received 'analyze-readability' event in content.js");
+// === STEP 1: Extract words from page ===
+function extractWordsFromPage(limit = MAX_WORDS) {
+    const text = document.body.innerText;
+    const words = text
+        .toLowerCase()
+        .match(/\b[a-z]{3,}\b/g)  // 3+ letter words only
+        ?.slice(0, limit) || [];
 
-    // Step 1: Extract words
-    const words = Array.from(document.body.innerText.match(/\b\w+\b/g) || []).slice(0, 100);
-    const uniqueWords = [...new Set(words.map(w => w.toLowerCase()))];
-    console.log("📦 Words extracted:", uniqueWords.slice(0, 10));
+    const uniqueWords = [...new Set(words)];
+    console.log("🧠 Words extracted:", uniqueWords);
+    return uniqueWords;
+}
 
-    // Step 2: Send to backend
-    const userId = "test-user";  // Can make dynamic later
+// === STEP 2: Fetch difficulty scores from Flask ===
+async function fetchDifficulties(words) {
     const query = new URLSearchParams({
-        user_id: userId,
-        words: uniqueWords.join(",")
+        user_id: USER_ID,
+        words: words.join(","),
     });
 
-    try {
-        const res = await fetch(`http://localhost:5000/get_difficulties?${query}`);
-        const difficulties = await res.json();
-        console.log("📊 Difficulty scores received:", difficulties);
+    const url = `http://localhost:5000/get_difficulties?${query}`;
+    console.log("🌐 Fetching:", url);
 
-        // Step 3: Highlight hard words (e.g., difficulty > 0.7)
-        const threshold = 0.7;
-        const pattern = new RegExp(`\\b(${Object.keys(difficulties).join("|")})\\b`, "gi");
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
 
-        document.body.innerHTML = document.body.innerHTML.replace(pattern, (match) => {
-            const score = difficulties[match.toLowerCase()] || 0.5;
-            if (score >= threshold) {
-                return `<mark style="background-color: yellow;" title="Difficulty: ${score.toFixed(2)}">${match}</mark>`;
-            }
-            return match;
-        });
+    const data = await res.json();
+    console.log("✅ Difficulty scores received:", data);
+    return data;
+}
 
-        console.log("✅ Highlighting complete.");
-    } catch (err) {
-        console.error("❌ Fetch failed:", err);
+// === STEP 3: Safely highlight words in DOM ===
+function highlightWords(difficulties, threshold = DIFFICULTY_THRESHOLD) {
+    const wordsToHighlight = Object.entries(difficulties)
+        .filter(([_, score]) => score >= threshold)
+        .map(([word]) => word.toLowerCase());
+
+    if (wordsToHighlight.length === 0) {
+        console.log("⚠️ No words to highlight");
+        return;
     }
-});
+
+    console.log("🟨 Highlighting words:", wordsToHighlight);
+
+    const regex = new RegExp(`\\b(${wordsToHighlight.join('|')})\\b`, "gi");
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+
+    while (walker.nextNode()) {
+        const node = walker.currentNode;
+
+        // skip non-visible or unsafe nodes
+        if (!node.nodeValue.trim()) continue;
+        if (node.parentNode.closest("script, style, noscript, iframe")) continue;
+
+        const text = node.nodeValue;
+        const matches = [...text.matchAll(regex)];
+        if (matches.length === 0) continue;
+
+        const fragment = document.createDocumentFragment();
+        let lastIndex = 0;
+
+        for (const match of matches) {
+            const start = match.index;
+            const end = start + match[0].length;
+
+            fragment.appendChild(document.createTextNode(text.slice(lastIndex, start)));
+
+            const mark = document.createElement("mark");
+            mark.className = "highlighted-word";
+            mark.textContent = match[0];
+            fragment.appendChild(mark);
+
+            lastIndex = end;
+        }
+
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+        node.parentNode.replaceChild(fragment, node);
+    }
+
+    console.log("✅ Highlighting complete.");
+}
+
+// === STEP 4: Inject highlight styles ===
+(function injectStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+    .highlighted-word {
+      background: yellow;
+      font-weight: bold;
+      padding: 0 2px;
+    }
+  `;
+    document.head.appendChild(style);
+})();
+
+// === STEP 5: Run the pipeline ===
+(async function () {
+    try {
+        const words = extractWordsFromPage();
+        const difficulties = await fetchDifficulties(words);
+        highlightWords(difficulties);
+    } catch (err) {
+        console.error("❌ Extension error:", err);
+    }
+})();
+
+
+

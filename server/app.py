@@ -7,11 +7,11 @@ from routes.get_difficulties import get_difficulties_bp
 # from routes.user import user_bp  # (optional later)
 
 app = Flask(__name__)
-CORS(app)
+CORS(get_difficulties_bp)
 # Register route blueprints
 app.register_blueprint(analyze_bp, url_prefix="/analyze")
 app.register_blueprint(text_bp, url_prefix="/text")
-app.register_blueprint(get_difficulties_bp, url_prefix="/get_difficulties")
+app.register_blueprint(get_difficulties_bp)
 # app.register_blueprint(user_bp, url_prefix="/user")  # (optional later)
 
 if __name__ == "__main__":
