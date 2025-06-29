@@ -1,15 +1,5 @@
-console.log("✅ popup.js loaded");
+document.getElementById("login").addEventListener("click", async () =>
+    const email = document.getElementById("email").value;
+    const password document.getElementById("password").value;
 
-document.getElementById("analyze").addEventListener("click", async () => {
-    console.log("🚀 Analyze Page button clicked");
 
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-    chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        function: () => {
-            console.log("📦 Script injected into tab");
-            window.dispatchEvent(new CustomEvent("analyze-readability"));
-        }
-    });
-});

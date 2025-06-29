@@ -1,7 +1,7 @@
 # Ignore virtual environments
 env/
 venv/
-
+server/.env
 # Ignore NLTK data downloads
 nltk_data/
 

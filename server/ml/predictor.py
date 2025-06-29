@@ -23,9 +23,5 @@ def predict_difficulty_user(df,words):
     if filtered.empty:
         return {word: 0.5 for word in words}  
     result = dict(zip(filtered["word"], filtered["user_difficulty_score"]))
-    
-    for word in words:
-        if word not in result:
-            result[word] = 0.5
 
     return result
