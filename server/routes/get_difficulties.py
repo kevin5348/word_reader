@@ -1,14 +1,13 @@
 from flask import Blueprint ,request ,jsonify
 import pandas as pd
 from ml.predictor import predict_difficulty_user
-from database.dp  import get_db_connection
+from server.scripts.dp  import get_db_connection
 
 get_difficulties_bp = Blueprint('get_difficulties', __name__)
 @get_difficulties_bp.route('/get_difficulties', methods=['GET'])
 
 def get_difficulties():
     try:
-        user_id = request.args.get("user_id")
         raw_words = request.args.get("words", "")
         print("Received:", raw_words)
         words = raw_words.split(",")
@@ -23,7 +22,7 @@ def get_difficulties():
         return jsonify(result)
     
     except Exception as e:
-        print("❌ ERROR:", e)
+        print("ERROR:", e)
         return jsonify({"error": str(e)}), 500
 
 def users_level(username):

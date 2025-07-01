@@ -1,5 +1,5 @@
 import jwt
-from database.dp import get_db_connection
+from database.init_db import User
 import datetime
 from flask import Blueprint ,request ,jsonify
 import bcrypt
@@ -7,7 +7,7 @@ import os
 
 login_bp = Blueprint('login', __name__)
 @login_bp.route('/login', methods=['POST'])
-def create_token(user_id):
+def create_token():
     payload = {
         "id" :id,
         "exp": datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
@@ -18,14 +18,10 @@ def login():
     data= request.json
     email= data.get("email")
     password = data.get(password).encode('utf-8')
-
-    conn = get_db_connection()
-    cur = conn.cursor()
-
-    cur.execute("SELECT id, password_hash FROM users WHERE email =%S", (email,))
-    user = cur.fetchone()
-    conn.close()
+    #filters database for specific user
+    user = User.query.filter_by(username=email).first()
+    #checks if user has correct password user tokens
     if user and bcrypt.checkpw(password, user[1].encode('utf-8')):
         token = create_token(user[0])
         return jsonify({"token": token})
-    return jsonify({"error": "invaild credentials"}),401
+    return jsonify({"error": "invalid credentials"}),401

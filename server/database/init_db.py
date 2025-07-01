@@ -1,35 +1,21 @@
-from dp import get_db_connection
-
-conn = get_db_connection()
-print("connected")
-cur = conn.cursor()
-
+from app import db
+from datetime import datetime
 # Create users table
-cur.execute("""
-CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    username TEXT UNIQUE NOT NULL,
-    hashed_password TEXT NOT NULL,
-    level FLOAT DEFAULT 0.5,
-    confidence FLOAT DEFAULT 0.0
-)
-""")
-print("users table created")
+class User(db.Model):
+    _tablename_='users'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.Column(db.String(80), unique=True, nullable = False))
+    hashed_password = db.Column(db.Float, default=0.5)
+    level = db.Column(db.Float, default=0.5)
+    confidence=db.Column(db.Float, default=0.0)
 
-# Create click_logs table
-cur.execute("""
-CREATE TABLE IF NOT EXISTS click_logs (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
-    word TEXT NOT NULL,
-    difficulty_score FLOAT NOT NULL,
-    clicked BOOLEAN DEFAULT TRUE,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
-""")
+    click_logs = db.relationship('ClickLog', backref='user', lazy=True)
 
-conn.commit()
-cur.close()
-conn.close()
-
-print("Tables created successfully.")
+class ClickLog(db.Model):
+    __tablename__ = 'click_logs'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    word = db.Column(db.Text, nullable=False)
+    difficulty_score = db.Column(db.Float, nullable=False)
+    clicked = db.Column(db.Boolean, default=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)

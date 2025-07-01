@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
 from ml.predictor import predict_difficulty_user
-from database.dp import get_db_connection
 from logic.update import update_user_level, update_confidence
 import pandas as pd 
 
