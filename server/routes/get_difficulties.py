@@ -1,7 +1,6 @@
 from flask import Blueprint ,request ,jsonify
 import pandas as pd
 from ml.predictor import predict_difficulty_user
-from server.scripts.dp  import get_db_connection
 
 get_difficulties_bp = Blueprint('get_difficulties', __name__)
 @get_difficulties_bp.route('/get_difficulties', methods=['GET'])
@@ -25,12 +24,3 @@ def get_difficulties():
         print("ERROR:", e)
         return jsonify({"error": str(e)}), 500
 
-def users_level(username):
-    conn = get_db_connection()
-    cur = conn.cursor()
-
-    cur.execute("""
-            SELECT difficulty_score
-            FROM user
-            WHERE username = %s
-    """, (username,))

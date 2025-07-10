@@ -1,27 +1,29 @@
-import jwt
+from app import db
 from database.init_db import User
-import datetime
-from flask import Blueprint ,request ,jsonify
+from flask import Blueprint, request, jsonify
 import bcrypt
-import os
+from auth.tokens import create_token
 
 login_bp = Blueprint('login', __name__)
-@login_bp.route('/login', methods=['POST'])
-def create_token():
-    payload = {
-        "id" :id,
-        "exp": datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
-    }
-    return jwt.encode(payload, os.environ.get("SECRET_KEY"),algorithm=os.environ.get("ALGO"))
 
+@login_bp.route('/login', methods=['POST'])
 def login():
-    data= request.json
-    email= data.get("email")
-    password = data.get(password).encode('utf-8')
-    #filters database for specific user
-    user = User.query.filter_by(username=email).first()
-    #checks if user has correct password user tokens
-    if user and bcrypt.checkpw(password, user[1].encode('utf-8')):
-        token = create_token(user[0])
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON"}), 400
+
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return jsonify({"error": "Email and password are required"}), 400
+
+    # filters database for specific user by email
+    user = User.query.filter_by(email=email).first()
+
+    # checks if user exists and if the password is correct
+    if user and bcrypt.checkpw(password.encode('utf-8'), user.hashed_password.encode('utf-8')):
+        token = create_token(user.id)
         return jsonify({"token": token})
-    return jsonify({"error": "invalid credentials"}),401
+        
+    return jsonify({"error": "Invalid credentials"}), 401

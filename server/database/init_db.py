@@ -8,14 +8,12 @@ class User(db.Model):
     hashed_password = db.Column(db.Float, default=0.5)
     level = db.Column(db.Float, default=0.5)
     confidence=db.Column(db.Float, default=0.0)
-
-    click_logs = db.relationship('ClickLog', backref='user', lazy=True)
-
-class ClickLog(db.Model):
+    clicked = db.Column(db.Boolean, default=True)
+class ClickLog(db.Model):    
     __tablename__ = 'click_logs'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     word = db.Column(db.Text, nullable=False)
     difficulty_score = db.Column(db.Float, nullable=False)
-    clicked = db.Column(db.Boolean, default=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.now(datetime.timezone.utc))
+    click_logs = db.relationship('ClickLog', backref='user', lazy=True)
