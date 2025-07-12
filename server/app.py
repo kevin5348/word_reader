@@ -21,7 +21,6 @@ def create_app():
 
     with app.app_context():
         # Import parts of our application
-        from database.init_db import User, ClickLog
         from routes.get_difficulties import get_difficulties_bp
         from routes.login import login_bp
         from routes.refresh import refresh_bp

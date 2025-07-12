@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify, current_app
 import jwt
 from auth.tokens import create_token
-from database.init_db import User, ClickLog
 
 refresh_bp = Blueprint('refresh', __name__)
 
 @refresh_bp.route('/refresh', methods=['POST'])
 def refresh_token():
+    from database.init_db import User  # Import inside the function
     token = request.json.get("token")
     if not token:
         return jsonify({"error": "Token is required"}), 400

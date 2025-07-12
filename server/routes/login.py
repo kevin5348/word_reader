@@ -1,5 +1,3 @@
-from app import db
-from database.init_db import User
 from flask import Blueprint, request, jsonify
 import bcrypt
 from auth.tokens import create_token
@@ -8,6 +6,7 @@ login_bp = Blueprint('login', __name__)
 
 @login_bp.route('/login', methods=['POST'])
 def login():
+    from database.init_db import User  # Import inside the function
     data = request.get_json()
     if not data:
         return jsonify({"error": "Invalid JSON"}), 400
