@@ -61,18 +61,18 @@ async function getWordDifficulties(words) {
         const wordsParam = words.join(',');
 
         const response = await fetch(`http://localhost:5000/get_difficulties?words=${wordsParam}`, {
-            method: 'GET', // Changed from POST
+            method: 'GET',
             headers: {
-                'Authorization': `Bearer ${result.auth_token}`, // Added auth
+                'Authorization': `Bearer ${result.auth_token}`,
                 'Content-Type': 'application/json'
             }
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error status: ${response.status}`);
         }
         const data = await response.json();
-        return data;
+        return data
     } catch (error) {
         console.error('Error fetching word difficulties:', error);
         return {};
