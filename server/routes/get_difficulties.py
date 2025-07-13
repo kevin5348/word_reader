@@ -15,7 +15,8 @@ def get_difficulties(current_user_id):
 
         from database.init_db import User
         user = User.query.filter(id=current_user_id).first()
-        user_level = user.level if user else jsonify({"error": "User not found"}), 404
+        if not user: jsonify({"error": "User not found"}), 404
+        user_level = user.level 
 
         df = pd.read_csv("datasets/data_with_predictions.csv")
         print("CSV loaded:", df.shape)
