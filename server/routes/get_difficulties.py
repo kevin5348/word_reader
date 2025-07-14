@@ -3,6 +3,8 @@ from auth.middleware import token_required
 import pandas as pd
 from ml.predictor import predict_difficulty_user
 from deep_translator import GoogleTranslator
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
 get_difficulties_bp = Blueprint('get_difficulties', __name__)
 @get_difficulties_bp.route('/get_difficulties', methods=['GET'])
@@ -36,8 +38,13 @@ def get_difficulties(current_user_id):
             word: score for word, score in difficulty_score.items() 
             if score > user_level
         }
-        return jsonify(difficult_words)
+       
     
+class translator:       
+        def __init__(self, source ='auto', target='es',max_workers=5):
+            self.source = source
+            self.target = target
+            self.max_workers = max_workers    
         
         translator = GoogleTranslator(source='auto', target='es')
         translated_words ={}
@@ -56,6 +63,7 @@ def get_difficulties(current_user_id):
                     "difficulty_score": score
                     
                 }
+        return jsonify(difficult_words)
      
     except Exception as e:
         print("ERROR:", e)
