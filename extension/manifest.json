@@ -1,12 +1,16 @@
 {
     "manifest_version": 3,
-    "name": "Word reader",
+    "name": "Word Reader",
     "version": "1.0",
-    "description": "Highlights difficult words on web pages",
+    "description": "Highlights difficult words on web pages and translates them",
     "permissions": [
         "scripting",
         "activeTab",
         "storage"
+    ],
+    "host_permissions": [
+        "http://localhost:5000/*",
+        "https://translate.googleapis.com/*"
     ],
     "action": {
         "default_popup": "popup.html"
@@ -22,7 +26,7 @@
             "js": [
                 "content.js"
             ],
-            "run_at": "document_idle"
+            "run_at": "document_end"
         }
     ]
 }
