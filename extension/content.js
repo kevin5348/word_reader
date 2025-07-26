@@ -21,7 +21,7 @@
 
                 const difficulties = await getWordDifficulties(words);
                 console.log("Difficulty scores received:", difficulties);
-                
+
                 // Make sure we have translations before proceeding
                 if (Object.keys(difficulties).length > 0) {
                     languageTranslation(difficulties);
@@ -61,30 +61,30 @@ function extractWordsFromPage() {
 
 function languageTranslation(difficulties) {
     console.log("🔄 Starting translation with difficulties:", difficulties);
-    
+
     // Check if difficulties object is valid
     if (!difficulties || typeof difficulties !== 'object' || Object.keys(difficulties).length === 0) {
         console.error("❌ Invalid difficulties object:", difficulties);
         return;
     }
-    
+
     // Debug: Show what words we're trying to translate
     const wordsToTranslate = Object.keys(difficulties);
     console.log(`📝 Words to translate: [${wordsToTranslate.join(', ')}]`);
-    
+
     // Debug: Show translations
     wordsToTranslate.forEach(word => {
         const translation = difficulties[word]?.translation;
         console.log(`📖 "${word}" -> "${translation}"`);
     });
-    
+
     // Simple test first - replace ALL instances of "the" with "LA" to verify DOM manipulation works
     console.log("🧪 Testing basic DOM manipulation...");
     const allText = document.body.innerText;
     if (allText.includes('the')) {
         console.log("Found 'the' in page text - DOM manipulation should work");
     }
-    
+
     const walker = document.createTreeWalker(
         document.body,
         NodeFilter.SHOW_TEXT,
@@ -127,10 +127,10 @@ function languageTranslation(difficulties) {
         Object.keys(difficulties).forEach(word => {
             const translationData = difficulties[word];
             const translation = translationData?.translation || word;
-            
+
             // Create regex with word boundaries
             const regex = new RegExp(`\\b${word}\\b`, 'gi');
-            
+
             // Check if word exists in text
             if (regex.test(text)) {
                 console.log(`✅ Found "${word}" in text node, replacing with "${translation}"`);
@@ -149,7 +149,7 @@ function languageTranslation(difficulties) {
     });
 
     console.log(`✨ Translation completed. Made ${replacementsMade} replacements.`);
-    
+
     if (replacementsMade === 0) {
         console.warn("⚠️ No replacements made. This could be because:");
         console.warn("   1. Words are not found in text (case sensitivity)");
