@@ -14,7 +14,6 @@
         try {
             const result = await chrome.storage.local.get(['auth_token']);
             if (result.auth_token) {
-                console.log("Word Reader: Starting page processing...");
 
                 const words = extractWordsFromPage();
                 console.log(`Found ${words.length} unique words on page`);
@@ -25,9 +24,8 @@
                 // Make sure we have translations before proceeding
                 if (Object.keys(difficulties).length > 0) {
                     languageTranslation(difficulties);
-                    console.log("Language translation applied");
                 } else {
-                    console.log("No difficult words found or translation failed");
+                    console.log("No difficult words found");
                 }
 
             } else {
@@ -60,29 +58,10 @@ function extractWordsFromPage() {
 }
 
 function languageTranslation(difficulties) {
-    console.log("🔄 Starting translation with difficulties:", difficulties);
-
     // Check if difficulties object is valid
     if (!difficulties || typeof difficulties !== 'object' || Object.keys(difficulties).length === 0) {
-        console.error("❌ Invalid difficulties object:", difficulties);
+        console.error("Invalid difficulties object:", difficulties);
         return;
-    }
-
-    // Debug: Show what words we're trying to translate
-    const wordsToTranslate = Object.keys(difficulties);
-    console.log(`📝 Words to translate: [${wordsToTranslate.join(', ')}]`);
-
-    // Debug: Show translations
-    wordsToTranslate.forEach(word => {
-        const translation = difficulties[word]?.translation;
-        console.log(`📖 "${word}" -> "${translation}"`);
-    });
-
-    // Simple test first - replace ALL instances of "the" with "LA" to verify DOM manipulation works
-    console.log("🧪 Testing basic DOM manipulation...");
-    const allText = document.body.innerText;
-    if (allText.includes('the')) {
-        console.log("Found 'the' in page text - DOM manipulation should work");
     }
 
     const walker = document.createTreeWalker(
@@ -106,22 +85,14 @@ function languageTranslation(difficulties) {
         textNodes.push(node);
     }
 
-    console.log(`🔍 Found ${textNodes.length} text nodes`);
-
     let replacementsMade = 0;
 
     textNodes.forEach((textNode, index) => {
         let text = textNode.nodeValue;
         let originalText = text;
 
-        // Skip empty or whitespace-only text nodes
         if (!text || text.trim().length === 0) {
             return;
-        }
-
-        // Debug: Log first few text nodes
-        if (index < 5) {
-            console.log(`📄 Text node ${index}: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
         }
 
         Object.keys(difficulties).forEach(word => {
@@ -133,34 +104,23 @@ function languageTranslation(difficulties) {
 
             // Check if word exists in text
             if (regex.test(text)) {
-                console.log(`✅ Found "${word}" in text node, replacing with "${translation}"`);
+
                 text = text.replace(regex, translation);
             }
         });
 
-        // Apply changes if text was modified
         if (text !== originalText) {
-            console.log(`🔄 REPLACING text node ${index}:`);
-            console.log(`   FROM: "${originalText}"`);
-            console.log(`   TO:   "${text}"`);
+
             textNode.nodeValue = text;
             replacementsMade++;
         }
     });
 
-    console.log(`✨ Translation completed. Made ${replacementsMade} replacements.`);
-
     if (replacementsMade === 0) {
-        console.warn("⚠️ No replacements made. This could be because:");
-        console.warn("   1. Words are not found in text (case sensitivity)");
-        console.warn("   2. Words are in different DOM structure");
-        console.warn("   3. API didn't return expected translations");
+        console.warn("No replacements made.");
+
     }
 }
-
-
-
-
 
 async function getWordDifficulties(words) {
     try {
@@ -184,9 +144,6 @@ async function getWordDifficulties(words) {
             throw new Error(`HTTP error status: ${response.status}`);
         }
         const data = await response.json();
-        console.log("🔍 Raw API response:", data);
-        console.log("🔍 Response type:", typeof data);
-        console.log("🔍 Response keys:", Object.keys(data));
         return data
     } catch (error) {
         console.error('Error fetching word difficulties:', error);

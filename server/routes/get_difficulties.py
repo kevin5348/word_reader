@@ -4,41 +4,78 @@ import pandas as pd
 from ml.predictor import predict_difficulty_user
 from deep_translator import GoogleTranslator
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
+from cachetools import TTLCache
+from typing import Dict,List
 
-get_difficulties_bp = Blueprint('get_difficulties', __name__)
+#cache maxsize and time until deletion
+_TRANSLATION_CACHE: TTLCache = TTLCache(maxsize=20000, ttl=7*24*60*60)
+_DF_CACHE = None
+
+def csv_load():
+    global _DF_CACHE
+    if _DF_CACHE is None:
+        _DF_CACHE = pd.read_csv("datasets/data_with_predictions.csv")
+    return _DF_CACHE
+
+#checks if input words are in cache
+def cache_get(words: List[str], target: str):
+    found, missing = {}, []
+    for w in words:
+        key = f"{target}:{w.lower}"
+        if key in _TRANSLATION_CACHE:
+            found[w]
+        else:
+            missing.append[w]
+    return found, missing
+
+def cache_put(translations: Dict[str, str], target : str):
+    for w, t in translations.items():
+        _TRANSLATION_CACHE[f"{target}:{w.lower()}"] = t
+
+def _clean_words(words : list[str]) -> List[str]:
+    seen = set()
+    out: List[str] = []
+    for w in words:
+        if not isinstance(w, str):
+            continue
+        w = normalize("NFKC", w).strip()
+        if not w:
+            continue
+        key = w.casefold()
+        if key in seen :
+            continue
+        seen.add(key)
+        out.append(w)
+    return out
+
+def chunks(words: List[str], max_words: int = 100):
+    chunk = []
+    for w in words:
+        if len(chunk) >= max_words:
+            yield chunk
+        chunk.append(w)
+    if chunk:
+        yield chunk
 
 class Translator:
-    def __init__(self, source='auto', target='es', max_workers=(3)):
-        self.source = source
+    def __init__(self, source= 'auto', target= 'es'):
+        self._tr = GoogleTranslator(source=source, target=target)
         self.target = target
-        self.max_workers = max_workers    
-        
-    def translate_word(self, word):
-        try :
-            translator = GoogleTranslator(source=self.source, target=self.target)
-            translation = translator.translate(word)
-            return word,translation
-        except Exception as e: 
-            return word, word
-    async def translate_words(self, words):
+    
+    def translate(self , words: List[str]) -> Dict[str,str]:
+        words = _clean_words(words)
         if not words:
-            return {}
-            
-        loop = asyncio.get_event_loop()
-        
-        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-        
-            tasks = [
-                loop.run_in_executor(executor, self.translate_word, word)
-                for word in words
-            ]
-            
-        
-            results = await asyncio.gather(*tasks)
-            
-            
-            return dict(results)
+            return{}
+    
+        cached, missing = cache_get(words, self.target)
+        result = dict(cached)
+
+        for chunk in chunks(missing, max_words=100):
+            translated_list= self._tr.translate_batch(chunk)
+            batch_map = dict(zip(chunk, translated_list))
+            result.update(batch_map)
+            cache_put(batch_map,self.target)
+        return result
 
 @get_difficulties_bp.route('/get_difficulties', methods=['GET'])
 @token_required
