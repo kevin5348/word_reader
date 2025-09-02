@@ -2,3 +2,8 @@
     background-color: yellow;
     font-weight: bold;
 }
+
+.translated {
+    background-color: aqua;
+    color: aquamarine;
+}

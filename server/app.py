@@ -7,7 +7,6 @@ from flask_cors import CORS
 load_dotenv()
 
 def create_app():
-    """Create and configure an instance of the Flask application."""
     
     app = Flask(__name__)
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
@@ -19,7 +18,7 @@ def create_app():
     db.init_app(app)
 
     
-        # Import parts of our application
+        # Import parts of the application
     from routes.get_difficulties import get_difficulties_bp
     from routes.login import login_bp
     from routes.refresh import refresh_bp

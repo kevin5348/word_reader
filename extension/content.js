@@ -104,16 +104,31 @@ function languageTranslation(difficulties) {
 
             // Check if word exists in text
             if (regex.test(text)) {
+                const fragment = document.createDocumentFragment();
+                let lastIndex = 0;
 
-                text = text.replace(regex, translation);
+                text.replace(regex, (match, offset) => {
+                    if (offset > lastIndex) {
+                        fragment.appendChild(document.createTextNode(text.slice(lastIndex, offset)));
+                    }
+
+                    const span = document.createElement("span");
+                    span.textContent = translation;
+                    span.className = "translated";
+                    fragment.appendChild(span);
+
+                    lastIndex = offset + match.length;
+                });
+                if (lastIndex < TextTrack.length) {
+                    fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+                }
+                textNode.replaceWith(fragment);
+                replacementsMade++;
             }
+
         });
 
-        if (text !== originalText) {
 
-            textNode.nodeValue = text;
-            replacementsMade++;
-        }
     });
 
     if (replacementsMade === 0) {
@@ -150,3 +165,4 @@ async function getWordDifficulties(words) {
         return {};
     }
 }
+

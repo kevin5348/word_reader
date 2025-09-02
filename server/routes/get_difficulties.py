@@ -119,9 +119,7 @@ def get_difficulties(current_user_id):
         out = {
             w: {"translation": translations.get(w, w), "difficulty_score": difficult_words[w]}
             for w in difficult_words
-        }
-       
-            
+        }   
         
         return jsonify(out)
         
