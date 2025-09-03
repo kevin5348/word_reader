@@ -115,6 +115,7 @@ function languageTranslation(difficulties) {
                     const span = document.createElement("span");
                     span.textContent = translation;
                     span.className = "translated";
+                    span.style.backgroundColor = 'red';
                     fragment.appendChild(span);
 
                     lastIndex = offset + match.length;
@@ -166,3 +167,22 @@ async function getWordDifficulties(words) {
     }
 }
 
+try { translatedWordClicked() }
+catch (error) {
+    console.error('Error getting clicked words');
+}
+
+
+
+function translatedWordClicked() {
+    const span = document.querySelector('span');
+    span.addEventListener('click', () => {
+        if (span.className == 'translated') {
+            span.style.backgroundColor = 'blue';
+            console.log("colour changed");
+            return span
+        }
+        else return;
+
+    });
+}

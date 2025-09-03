@@ -16,6 +16,8 @@ def create_app():
     # Initialize extensions with the app
     from database.init_db import db
     db.init_app(app)
+    with app.app_context():
+        db.create_all()
 
     
         # Import parts of the application
@@ -27,13 +29,6 @@ def create_app():
     app.register_blueprint(get_difficulties_bp)
     app.register_blueprint(login_bp)
     app.register_blueprint(refresh_bp)
-
-        # Add a command to initialize the database
-    @app.cli.command("init-db")
-    def init_db_command():
-        """Clear existing data and create new tables."""
-        db.create_all()
-        print("Initialized the database.")
 
     return app
 
