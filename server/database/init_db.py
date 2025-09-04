@@ -10,8 +10,7 @@ class User(db.Model):
     hashed_password = db.Column(db.String(128), nullable=False) 
     level = db.Column(db.Float, default=0.5)
     confidence = db.Column(db.Float, default=0.0)
-    
-    
+
     click_logs = db.relationship('ClickLog', backref='user', lazy=True)
 
 class ClickLog(db.Model):    
@@ -26,7 +25,6 @@ class WordDifficulty(db.Model):
     __tablename__ = 'word_difficulties'
     id = db.Column(db.Integer, primary_key=True)
     word = db.Column(db.Text, nullable=False, unique=True, index=True)
-
     count = db.Column(db.BigInteger, nullable=False)
     log_count = db.Column(Numeric(10, 2), nullable=False)       
     length = db.Column(db.Integer, nullable=False)

@@ -24,6 +24,10 @@
                 // Make sure we have translations before proceeding
                 if (Object.keys(difficulties).length > 0) {
                     languageTranslation(difficulties);
+                    try { translatedWordClicked() }
+                    catch (error) {
+                        console.error('Error getting clicked words');
+                    }
                 } else {
                     console.log("No difficult words found");
                 }
@@ -120,16 +124,13 @@ function languageTranslation(difficulties) {
 
                     lastIndex = offset + match.length;
                 });
-                if (lastIndex < TextTrack.length) {
+                if (lastIndex < text.length) {
                     fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
                 }
                 textNode.replaceWith(fragment);
                 replacementsMade++;
             }
-
         });
-
-
     });
 
     if (replacementsMade === 0) {
@@ -167,22 +168,18 @@ async function getWordDifficulties(words) {
     }
 }
 
-try { translatedWordClicked() }
-catch (error) {
-    console.error('Error getting clicked words');
-}
-
-
-
 function translatedWordClicked() {
-    const span = document.querySelector('span');
-    span.addEventListener('click', () => {
-        if (span.className == 'translated') {
+    const spans = document.querySelectorAll('span.translated');
+    spans.forEach(span => {
+        span.addEventListener('click', () => {
+            // Get the clicked word
+            const word = span.innerText;
+            console.log("Clicked word:", word);
             span.style.backgroundColor = 'blue';
-            console.log("colour changed");
-            return span
-        }
-        else return;
 
+        })
     });
 }
+
+
+
