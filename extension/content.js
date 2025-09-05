@@ -171,15 +171,75 @@ async function getWordDifficulties(words) {
 function translatedWordClicked() {
     const spans = document.querySelectorAll('span.translated');
     spans.forEach(span => {
+
         span.addEventListener('click', () => {
+
+            span.className = 'clicked';
+
             // Get the clicked word
             const word = span.innerText;
             console.log("Clicked word:", word);
+
             span.style.backgroundColor = 'blue';
+            const wordsParam = word.join(',');
+
+            const result = chrome.storage.local.get(['auth_token']);
+            if (!result.auth_token) {
+                throw new Error('No auth token found');
+            }
+
+            const response = fetch(`http://localhost:5000/get_clicks?words=${wordsParam}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${result.auth_token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
         })
     });
 }
+let flushed = false;
+
+function setupExitFlush() {
+    const flushOnce = () => {
+        if (flushed) return;
+        flushed = true;
+        wordsNotClicked();
+    };
+    // when user reloads or navigates away from page
+    window.addEventListener('pagehide', () => {
+        if (document.hidden) flushOnce();
+    });
+
+}
+
+function wordsNotClicked() {
+    const set = new set();
+    const spans = document.querySelectorAll('span.translated')
+    spans.forEach(span, async () => {
+        const word = (span.innerText || '').trim();
+        if (word) {
+            set.add(word.toLowerCase());
+        }
+        const words = Array.from(set);
+        if (!words.length) return;
+        const result = await chrome.storage.local.get(['auth_token']);
+        if (!result.auth_token) {
+            throw new Error('No auth token found');
+        }
+
+        const response = await fetch(`http://localhost:5000/get_clicks?wordsNotClicked=${words}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${result.auth_token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+    });
+}
+
+
 
 
 

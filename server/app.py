@@ -24,11 +24,13 @@ def create_app():
     from routes.get_difficulties import get_difficulties_bp
     from routes.login import login_bp
     from routes.refresh import refresh_bp
+    from routes.get_clicks import get_clicks_bp
 
         # Register Blueprints
     app.register_blueprint(get_difficulties_bp)
     app.register_blueprint(login_bp)
     app.register_blueprint(refresh_bp)
+    app.register_blueprint(get_clicks_bp)
 
     return app
 
