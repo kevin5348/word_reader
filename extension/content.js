@@ -169,33 +169,24 @@ async function getWordDifficulties(words) {
 }
 
 function translatedWordClicked() {
+    const setOfClicked = new set();
     const spans = document.querySelectorAll('span.translated');
     spans.forEach(span => {
 
         span.addEventListener('click', () => {
-
             span.className = 'clicked';
 
-            // Get the clicked word
-            const word = span.innerText;
-            console.log("Clicked word:", word);
-
-            span.style.backgroundColor = 'blue';
-            const wordsParam = word.join(',');
-
-            const result = chrome.storage.local.get(['auth_token']);
-            if (!result.auth_token) {
-                throw new Error('No auth token found');
+            const word = (span.innerText || '').trim()
+            if (word) {
+                setOfClicked.add(words.toLowerCase());
             }
 
-            const response = fetch(`http://localhost:5000/get_clicks?words=${wordsParam}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${result.auth_token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+            const wordsClicked = Array.from(setOfClicked)
+            if (!wordsClicked.length) {
+                return;// what should i return?
+            }
 
+            return wordsClicked;
         })
     });
 }
@@ -216,26 +207,32 @@ function setupExitFlush() {
 
 function wordsNotClicked() {
     const set = new set();
-    const spans = document.querySelectorAll('span.translated')
+    const spans = document.querySelectorAll('span.translated');
     spans.forEach(span, async () => {
+
         const word = (span.innerText || '').trim();
         if (word) {
             set.add(word.toLowerCase());
         }
-        const words = Array.from(set);
-        if (!words.length) return;
-        const result = await chrome.storage.local.get(['auth_token']);
-        if (!result.auth_token) {
-            throw new Error('No auth token found');
-        }
+        const wordsNotClicked = Array.from(set);
+        const wordsClicked = translatedWordClicked()
+        if (!wordsNotClicked.length) return;
 
-        const response = await fetch(`http://localhost:5000/get_clicks?wordsNotClicked=${words}`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${result.auth_token}`,
-                'Content-Type': 'application/json'
-            }
-        });
+        const { auth_token } = await chrome.storage.local.get(['auth_token']);
+
+        try {
+            await fetch('http://localhost:5000/get_clicks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(auth_token ? { 'Authorization': 'Bearer ' + auth_token } : {})
+                },
+                body: JSON.stringify({ wordsNotClicked, wordsClicked })
+            });
+        }
+        catch (error) {
+            console.log("error sending translated words to update"), error
+        }
     });
 }
 

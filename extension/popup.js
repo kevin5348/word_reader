@@ -90,9 +90,25 @@ function showLoginView() {
     document.getElementById('logged-in-view').style.display = 'none';
 }
 // Logout functionality
-document.getElementById("logout").addEventListener("click", () => {
-    chrome.storage.local.remove('auth_token', () => {
-        console.log('Logged out successfully');
-        showLoginView();
-    });
+document.getElementById("logout").addEventListener("click", async () => {
+    const { auth_token } = await chrome.storage.local.get(['auth_token']);
+    try {
+        await fetch('http://localhost:5000/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(auth_token ? { 'Authorization': 'Bearer ' + auth_token } : {})
+            },
+            body: JSON.stringify({ logged_out: true, email })
+        });
+    }
+    catch (e) {
+        console.error('logout failed')
+    }
+    finally {
+        chrome.storage.local.remove('auth_token', () => {
+            console.log('Logged out successfully');
+            showLoginView();
+        });
+    }
 });

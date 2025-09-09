@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Numeric
 db = SQLAlchemy()
 # Create users table
@@ -12,14 +12,6 @@ class User(db.Model):
     confidence = db.Column(db.Float, default=0.0)
 
     click_logs = db.relationship('ClickLog', backref='user', lazy=True)
-
-class ClickLog(db.Model):    
-    __tablename__ = 'click_logs'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    word = db.Column(db.Text, nullable=False)
-    difficulty_score = db.Column(db.Float, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime)
 
 class WordDifficulty(db.Model):
     __tablename__ = 'word_difficulties'
@@ -36,13 +28,14 @@ class WordDifficulty(db.Model):
 class Clicked(db.Model):
     __tablename__ = 'Clicked'
     id = db.column(db.Integer, primary_key = True)
-    Session_id = db.Column(db.String,db.ForeignKey('session.id', ondelete="CASCADE"),nullable= False)
-    #add word id link to word diff and get diff for word link to the id
-    word_id = db.column(db.Text, nullable = False)
+    Session_id = db.Column(db.String,db.ForeignKey('sessions.id', ondelete="CASCADE"),nullable= False)
+    word_id = db.column(db.Integer,db.Foreign_key('word_difficulties.id'), nullable = False)
     clicked = db.column(db.boolean, nullable= False)
+    created_at = db.Column(db.DateTime, default=datetime.now(datetime.timezone.utc))
+    session = db.relationship("Session", back_populates="clicks")
+    word = db.relationship("WordDifficulty")
 
-
-class Session(db.Model):
+class UserSession(db.Model):
     __tablename__ = 'Sessions'
     id = db.column(db.Integer, primary_key= True)
     user_id = db.column(db.Integer,db.Foreign_key('users.id'), nullable = False)
@@ -55,7 +48,7 @@ class Session(db.Model):
     clicks = db.relationship(
         "Clicked",
         back_populates="session",
-        cascade = "all, delete-orphan"
+        cascade = "all, delete-orphan",
         passive_deletes=True
     )
 
