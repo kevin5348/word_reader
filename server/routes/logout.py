@@ -4,6 +4,7 @@ from datetime import datetime
 logout_bp = Blueprint('logout',__name__)
 @logout_bp.route('/logout', methods = ['POST'])
 
+
 def logout():
     data= request.get_json(force=True)
     if data.get('logged_out'):

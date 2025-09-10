@@ -1,4 +1,4 @@
-from flask import Blueprint ,request ,jsonify
+from flask import Blueprint ,request ,jsonify,g
 from auth.middleware import token_required
 import pandas as pd
 from ml.predictor import predict_difficulty_user
@@ -82,7 +82,8 @@ class Translator:
 
 @get_difficulties_bp.route('/get_difficulties', methods=['GET'])
 @token_required
-def get_difficulties(current_user_id):
+def get_difficulties():
+    current_user_id=g.user_id
     try:
         raw_words = request.args.get('words', "")
        

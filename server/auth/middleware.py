@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import request, jsonify, current_app
+from flask import request, jsonify, current_app,g
 import jwt
 
 def token_required(f):
@@ -15,13 +15,14 @@ def token_required(f):
                 token = token[7:]
             
             data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
-            current_user_id = data['id']
             
         except jwt.ExpiredSignatureError:
             return jsonify({'error': 'Token has expired'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'error': 'Invalid token'}), 401
         
-        return f(current_user_id, *args, **kwargs)
+        g.user_id= data['id']
+
+        return f(*args, **kwargs)
     
     return decorated
