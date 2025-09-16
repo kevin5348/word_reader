@@ -1,6 +1,6 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify,g
 from datetime import datetime
-
+from logic.update import update_user_level_after_clicks
 logout_bp = Blueprint('logout',__name__)
 @logout_bp.route('/logout', methods = ['POST'])
 
@@ -9,21 +9,14 @@ def logout():
     data= request.get_json(force=True)
     if data.get('logged_out'):
  
-        from database.init_db import User
-        email = data.get('email')
+        
 
-        user = User.query.filter_by(email=email).first()
+        user = g.user
         if not user :
             return jsonify ({"ok":False, "error":"user not found"}), 404
         
+        update_user_level_after_clicks()
         user_session_end(user)
-        
-        
-        #update function
-        #update server with new level and session data
-        #delete clicks
-
-        
    
         return jsonify({"ok" : True}), 200
     return jsonify({"ok":False}), 400
@@ -34,6 +27,10 @@ def user_session_end(user):
     user_session = UserSession.query.filter_by(user_id=user.id, session_end=None).first()
     if not user_session:
             return jsonify ({"ok": True, "error" : "user session not found"}), 404
-   
+    session = UserSession.query.filter_by(user_id=user.id).first()
+
+
+    
     user_session.session_end=datetime
+    db.session.delete(session)
     db.session.commit()

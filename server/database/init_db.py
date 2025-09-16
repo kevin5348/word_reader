@@ -11,7 +11,7 @@ class User(db.Model):
     level = db.Column(db.Float, default=0.5)
     confidence = db.Column(db.Float, default=0.0)
 
-    click_logs = db.relationship('ClickLog', backref='user', lazy=True)
+  
 
 class WordDifficulty(db.Model):
     __tablename__ = 'word_difficulties'
@@ -26,23 +26,23 @@ class WordDifficulty(db.Model):
     difficulty_score = db.Column(Numeric(5, 2), nullable=False) 
 
 class Clicked(db.Model):
-    __tablename__ = 'Clicked'
-    id = db.column(db.Integer, primary_key = True)
-    Session_id = db.Column(db.String,db.ForeignKey('sessions.id', ondelete="CASCADE"),nullable= False)
-    word_id = db.column(db.Integer,db.Foreign_key('word_difficulties.id'), nullable = False)
-    clicked = db.column(db.boolean, nullable= False)
-    created_at = db.Column(db.DateTime, default=datetime.now(datetime.timezone.utc))
-    session = db.relationship("Session", back_populates="clicks")
+    __tablename__ = 'clicked'
+    id = db.Column(db.Integer, primary_key = True)
+    Session_id = db.Column(db.Integer,db.ForeignKey('Sessions.id', ondelete="CASCADE"),nullable= False)
+    word_id = db.Column(db.Integer,db.ForeignKey('word_difficulties.id'), nullable = False)
+    clicked = db.Column(db.Boolean, nullable= False)
+    created_at = db.Column(db.DateTime, default=datetime)
+    session = db.relationship("UserSession", back_populates="clicks")
     word = db.relationship("WordDifficulty")
 
 class UserSession(db.Model):
     __tablename__ = 'Sessions'
-    id = db.column(db.Integer, primary_key= True)
-    user_id = db.column(db.Integer,db.Foreign_key('users.id'), nullable = False)
-    session_start = db.column(db.DateTime)
-    session_end = db.column(db.DateTime)
-    total_words = db.column(db.Integer, default = 0)
-    total_clicks = db.column(db.Integer, default = 0)
+    id = db.Column(db.Integer, primary_key= True)
+    user_id = db.Column(db.Integer,db.ForeignKey('users.id'), nullable = False)
+    session_start = db.Column(db.DateTime)
+    session_end = db.Column(db.DateTime)
+    total_words = db.Column(db.Integer, default = 0)
+    total_clicks = db.Column(db.Integer, default = 0)
     mean_difficulty = db.Column(db.Numeric(5,2))
 
     clicks = db.relationship(
