@@ -17,8 +17,8 @@ def update_user_level_after_clicks():
     user = g.user_id
     if not user:
         return "User not found"
-    session = UserSession.query.filter_by(user_id= user).fist()
-    clicked_session = Clicked.query.filter_by(session_id=session).all()
+    session = UserSession.query.filter_by(user_id= user).first()
+    clicked_session = Clicked.query.filter_by(Session_id=session).all()
     words_clicked = [c.word.difficulty_score for c in clicked_session if c.clicked]
     words_Not_clicked = [c.word.difficulty_score for c in clicked_session if not c.clicked]
     N = len(words_clicked) + len(words_Not_clicked)
@@ -59,7 +59,7 @@ def update_user_level_after_clicks():
 
     
     
-    g = grad_sum/N
+    gr = grad_sum/N
     
     mean_difficulty_array = words_Not_clicked.join(words_clicked)
     count =0
@@ -72,7 +72,7 @@ def update_user_level_after_clicks():
     eta_eff = eta0/(1.0 + beta* conf_new)
     
     # update level
-    theta_new = theta- eta_eff*g
+    theta_new = theta- eta_eff*gr
     theta_new = 0.0 if theta_new < 0.0 else 1.0 if theta_new > 1.0 else theta_new
     
 

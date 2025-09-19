@@ -172,20 +172,20 @@ function translatedWordClicked() {
     const setOfClicked = new set();
     const spans = document.querySelectorAll('span.translated');
     spans.forEach(span => {
-
         span.addEventListener('click', () => {
-            span.className = 'clicked';
+
 
             const word = (span.innerText || '').trim()
             if (word) {
-                setOfClicked.add(words.toLowerCase());
+                setOfClicked.add(word.toLowerCase());
             }
-
+            span.classList.remove('translated');
+            span.classList.add('clicked');
+            span.backgroundColor = 'blue';
             const wordsClicked = Array.from(setOfClicked)
             if (!wordsClicked.length) {
                 return;// what should i return?
             }
-
             return wordsClicked;
         })
     });

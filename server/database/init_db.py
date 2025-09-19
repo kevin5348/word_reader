@@ -11,8 +11,6 @@ class User(db.Model):
     level = db.Column(db.Float, default=0.5)
     confidence = db.Column(db.Float, default=0.0)
 
-  
-
 class WordDifficulty(db.Model):
     __tablename__ = 'word_difficulties'
     id = db.Column(db.Integer, primary_key=True)
@@ -28,7 +26,7 @@ class WordDifficulty(db.Model):
 class Clicked(db.Model):
     __tablename__ = 'clicked'
     id = db.Column(db.Integer, primary_key = True)
-    Session_id = db.Column(db.Integer,db.ForeignKey('Sessions.id', ondelete="CASCADE"),nullable= False)
+    Session_id = db.Column(db.Integer,db.ForeignKey('sessions.id', ondelete="CASCADE"),nullable= False)
     word_id = db.Column(db.Integer,db.ForeignKey('word_difficulties.id'), nullable = False)
     clicked = db.Column(db.Boolean, nullable= False)
     created_at = db.Column(db.DateTime, default=datetime)
@@ -36,7 +34,7 @@ class Clicked(db.Model):
     word = db.relationship("WordDifficulty")
 
 class UserSession(db.Model):
-    __tablename__ = 'Sessions'
+    __tablename__ = 'sessions'
     id = db.Column(db.Integer, primary_key= True)
     user_id = db.Column(db.Integer,db.ForeignKey('users.id'), nullable = False)
     session_start = db.Column(db.DateTime)

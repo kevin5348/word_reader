@@ -99,7 +99,7 @@ document.getElementById("logout").addEventListener("click", async () => {
                 'Content-Type': 'application/json',
                 ...(auth_token ? { 'Authorization': 'Bearer ' + auth_token } : {})
             },
-            body: JSON.stringify({ logged_out: true, email })
+            body: JSON.stringify({ logged_out: true })
         });
     }
     catch (e) {
