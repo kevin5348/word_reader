@@ -23,7 +23,7 @@ The system improves user language modeling accuracy with every session, using **
 -  **Multi-Language Roadmap** – Designed to support English learning for all languages.
 
 ---
-## 🧩 Languages & Technologies Used
+##  Languages & Technologies Used
 
 **Backend:** Python, Flask, SQLAlchemy  
 **Database:** PostgreSQL  
