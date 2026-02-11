@@ -33,7 +33,7 @@ The system improves user language modeling accuracy with every session, using **
 **APIs:** Free translation API  
 **Modeling:** Regression model (Rasch and Fisher information) for updating level and a regression model (linguistic features: frequency, syllables, length, etc.) for word difficulty  
 **Caching:** Custom 20k-word cache system (auto-purges least-used entries every 7 days)  
-**Tools:** VS Code, Git, Docker (for testing and deployment)
+**Tools:** Git, Docker (for testing and deployment)
 
 ---
 
