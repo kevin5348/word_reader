@@ -1,8 +1,10 @@
 from functools import wraps
 from flask import request, jsonify, current_app,g
 import jwt
-
+"""JWT token_required decorator for route protection"""
 def token_required(f):
+    """JWT decorator that validates Authorization Bearer token
+    and attaches user_id to Flask global (g)"""
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization')
