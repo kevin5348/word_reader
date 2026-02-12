@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 });
-// two different views for logged in and login
+// Two different views for logged in and login
 function showLoggedInView() {
     document.getElementById('login-view').style.display = 'none';
     document.getElementById('logged-in-view').style.display = 'block';
