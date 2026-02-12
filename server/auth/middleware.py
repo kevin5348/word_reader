@@ -1,7 +1,8 @@
 from functools import wraps
+from database.init_db import db
 from flask import request, jsonify, current_app,g
 import jwt
-"""JWT token_required decorator for route protection"""
+
 def token_required(f):
     """JWT decorator that validates Authorization Bearer token
     and attaches user_id to Flask global (g)"""
@@ -22,8 +23,26 @@ def token_required(f):
             return jsonify({'error': 'Token has expired'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'error': 'Invalid token'}), 401
+            except jwt.ExpiredSignatureError:
+            return jsonify({"error": "Token has expired"}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({"error": "Invalid token"}), 401
+
+        user_id = data.get("id")
+        if not user_id:
+            return jsonify({"error": "Invalid token payload (missing id)"}), 401
+
+        # Check user still exists
+        user = db.session.get(User, user_id)  
         
-        g.user_id= data['id']
+
+        if not user:
+            return jsonify({"error": "User not found"}), 401
+
+
+        # Attach to g for querying
+        g.user_id = user_id
+        g.user = user
 
         return f(*args, **kwargs)
     
