@@ -31,7 +31,7 @@ The system improves user language modeling accuracy with every session, using **
 **Frontend/Extension:** JavaScript (Chrome Extension, Manifest v3), HTML, CSS  
 **Authentication:** Token-based auth (stored in Chrome local storage, verified in Flask)  
 **APIs:** Free translation API  
-**Modeling:** logistic modeling gradient-based optimization for updating level and a regression model (linguistic features: frequency, syllables, length, etc.) for word difficulty  
+**Modeling:** logistic modeling and gradient-based optimization for updating level. Regression model (linguistic features: frequency, syllables, length, etc.) for word difficulty  
 **Caching:** Custom 20k-word cache system (auto-purges least-used entries every 7 days)  
 **Tools:** Git
 
