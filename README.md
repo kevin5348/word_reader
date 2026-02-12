@@ -39,10 +39,11 @@ The system improves user language modeling accuracy with every session, using **
 
 ## Next Steps
 
-- **Fix word difficulty model** — Improve and retrain the regression model for word difficulty; current accuracy is low.  
+- **Fix word difficulty model** — Improve and retrain the regression model for word difficulty; current accuracy is low. Enable the difficulty model to recognize new words and assign levels, and add a popup for suggesting similar words of lower difficulty. 
 - **Add initial level assessment** — Create a website flow for users to take an initial placement test (e.g., CEFR) to set a starting level.  
-- **Polish UI/UX** — Make the frontend visually appealing, increase translation speed, enable the difficulty model to recognize new words and assign levels, and add a popup for suggesting similar words of lower difficulty.  
-- **Deploy** — Use Docker to containerize services for testing and production deployment.
+- **Polish UI/UX** — Make the frontend visually appealing,
+- **increase translation speed** - Using a larger cache of words, also switching api translator to handle more concurrent requests.
+- **Deploy** — Use Docker to containerize services for testing
 
 ---
 
