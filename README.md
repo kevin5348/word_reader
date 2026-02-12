@@ -15,7 +15,7 @@ The system improves user language modeling accuracy with every session, using **
 ## Key Features
 
 - **In-Page Translation** – Translates difficult words using a free translation API.  
-- **Adaptive Difficulty Model** – Updates user level in real time using Rasch, Fisher information, and gradient-based confidence scaling.  
+- **Adaptive Difficulty Model** – Updates each user’s proficiency level using a logistic model in real time based on which words they struggle with or understand  
 - **Smart Caching** – Stores the 20,000 most common translated words; automatically purges least-used words after 7 days for speed.  
 - **Secure Token Auth** – Chrome extension stores encrypted login tokens locally; backend decrypts tokens to identify user sessions and validate requests.  
 - **Continuous Learning** – Every click or ignore refines the user’s English proficiency curve using the update model.  
@@ -31,9 +31,9 @@ The system improves user language modeling accuracy with every session, using **
 **Frontend/Extension:** JavaScript (Chrome Extension, Manifest v3), HTML, CSS  
 **Authentication:** Token-based auth (stored in Chrome local storage, verified in Flask)  
 **APIs:** Free translation API  
-**Modeling:** Regression model (Rasch and Fisher information) for updating level and a regression model (linguistic features: frequency, syllables, length, etc.) for word difficulty  
+**Modeling:** logistic modeling gradient-based optimization for updating level and a regression model (linguistic features: frequency, syllables, length, etc.) for word difficulty  
 **Caching:** Custom 20k-word cache system (auto-purges least-used entries every 7 days)  
-**Tools:** Git, Docker (for testing and deployment)
+**Tools:** Git
 
 ---
 
