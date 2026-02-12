@@ -8,7 +8,7 @@
 **AI Word Reader** combines a **Flask backend**, **PostgreSQL database**, and **Chrome extension** to create a dynamic language-learning environment.  
 It identifies words above a user’s English level on the web using the Chrome extension, then translates them into their native language directly on the page and tracks reading behavior to adapt difficulty over time.
 
-The system improves user language modeling accuracy with every session, using **Logistic Moddling**, **Gradient Descent**, and a **custom regression word difficulty model** built from linguistic features.
+The system improves user language modeling accuracy with every session, using **Logistic Modelling**, **Gradient Descent**, and a **custom regression word difficulty model** built from linguistic features.
 
 ---
 
