@@ -1,3 +1,7 @@
+"""
+Database tables for user accounts, word difficulty data,
+user sessions, and click tracking.
+"""
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timezone
 from sqlalchemy import Numeric
