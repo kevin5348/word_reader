@@ -1,5 +1,4 @@
 from flask import g
-
 from database.init_db import UserSession, Clicked, db
 from auth.middleware import token_required
 
@@ -17,7 +16,8 @@ def update_user_level_after_clicks():
     user = g.user_id
     if not user:
         return "User not found"
-    session = UserSession.query.filter_by(user_id= user).first()
+    session = g.user_id
+    user = User.query.get(user_id)
     clicked_session = Clicked.query.filter_by(Session_id=session).all()
     words_clicked = [c.word.difficulty_score for c in clicked_session if c.clicked]
     words_Not_clicked = [c.word.difficulty_score for c in clicked_session if not c.clicked]
@@ -81,7 +81,7 @@ def update_user_level_after_clicks():
     UserSession.total_clicks = len(words_clicked)-1
     user.level = theta_new
     user.confidence = conf_new
-    db.session.commit
+    db.session.commit()
     
     return {
         "theta_before": round(theta, 4),
