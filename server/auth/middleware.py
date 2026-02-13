@@ -1,5 +1,5 @@
 from functools import wraps
-from database.init_db import db
+from database.init_db import db,User
 from flask import request, jsonify, current_app,g
 import jwt
 
@@ -23,10 +23,7 @@ def token_required(f):
             return jsonify({'error': 'Token has expired'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'error': 'Invalid token'}), 401
-            except jwt.ExpiredSignatureError:
-            return jsonify({"error": "Token has expired"}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({"error": "Invalid token"}), 401
+          
 
         user_id = data.get("id")
         if not user_id:
