@@ -17,7 +17,7 @@ def update_user_level_after_clicks():
     if not user:
         return "User not found"
     session = g.user_id
-    user = User.query.get(user_id)
+    user = g.user
     clicked_session = Clicked.query.filter_by(Session_id=session).all()
     words_clicked = [c.word.difficulty_score for c in clicked_session if c.clicked]
     words_Not_clicked = [c.word.difficulty_score for c in clicked_session if not c.clicked]
